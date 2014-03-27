@@ -10,6 +10,7 @@ if ltsp-update-image --cleanup /; then
 
   VERSIONplus=$(( $VERSION + 1 )) 
   VERSIONminus=$(( $VERSION -1 ))
+
  
 
   rm $(printf "%06i.img" $VERSIONminus)
