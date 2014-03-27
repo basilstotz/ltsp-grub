@@ -1,7 +1,12 @@
 #!/bin/sh
 
 cd /opt/ltsp/images
-VERSION=$(cat version)
+
+if test -f version; then
+   VERSION=$(cat version)
+else
+   VERSION=0
+fi
 
 # cp /var/lib/tftpboot/ltsp/i386/lts.conf /etc/lts.conf
 
