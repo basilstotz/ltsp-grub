@@ -1,0 +1,37 @@
+#!/bin/sh
+
+cd /opt/ltsp/images
+VERSION=$(cat version)
+
+cp /var/lib/tftpboot/ltsp/i386/lts.conf /etc/lts.conf
+
+if ltsp-update-image --cleanup /; then
+#if true; then
+
+  VERSIONplus=$(( $VERSION + 1 )) 
+  VERSIONminus=$(( $VERSION -1 ))
+ 
+
+  rm $(printf "%06i.img" $VERSIONminus)
+  rm   $(printf "%06i.img.zsync" $VERSIONminus)
+
+  rm $(printf "%06i.img" $VERSION)
+  rm $(printf "%06i.img.zsync" $VERSION)
+
+  ln -s i386.img.old $(printf "%06i.img" $VERSION)
+  echo "zsyncmake..."
+  zsyncmake -u $(printf "%06i.img" $VERSION) $(printf "%06i.img" $VERSION)
+
+  ln -s i386.img $(printf "%06i.img" $VERSIONplus)
+  echo "zsyncmake..."
+  zsyncmake -u $(printf "%06i.img" $VERSIONplus) $(printf "%06i.img" $VERSIONplus)
+#  cp i386.img.zsync $(printf "%06i.img.zsync" $VERSIONplus)
+
+
+  if test -f primary-image-* ; then rm primary-image-*; fi
+  touch $(printf "primary-image-%06i" $VERSIONplus)
+  echo "$(printf "%06i.img" $VERSIONplus)" >  $(printf "primary-image-%06i" $VERSIONplus)
+  echo $VERSIONplus > version
+
+fi
+
