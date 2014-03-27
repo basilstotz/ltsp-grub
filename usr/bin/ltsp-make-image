@@ -11,32 +11,30 @@ fi
 # cp /var/lib/tftpboot/ltsp/i386/lts.conf /etc/lts.conf
 
 if ltsp-update-image --cleanup /; then
-#if true; then
 
   VERSIONplus=$(( $VERSION + 1 )) 
-  VERSIONminus=$(( $VERSION -1 ))
 
- 
+  Vplus=$(printf "%06i.img"  $(( $VERSIONplus )) )
+  Vnull=$(printf "%06i.img"  $(( $VERSION +0 )) )
+  Vminus=$(printf "%06i.img" $(( $VERSION -1 )) )
 
-  rm $(printf "%06i.img" $VERSIONminus)
-  rm   $(printf "%06i.img.zsync" $VERSIONminus)
+  rm ${Vminus}
+  rm ${Vminus}.zsync 
 
-  rm $(printf "%06i.img" $VERSION)
-  rm $(printf "%06i.img.zsync" $VERSION)
+  rm ${Vnull} 
+  rm ${Vnull}.zsync
 
-  ln -s i386.img.old $(printf "%06i.img" $VERSION)
+  ln -s i386.img.old ${Vnull} 
   echo "zsyncmake..."
-  zsyncmake -u $(printf "%06i.img" $VERSION) $(printf "%06i.img" $VERSION)
+  zsyncmake -u ${Vnull} ${Vnull}
 
-  ln -s i386.img $(printf "%06i.img" $VERSIONplus)
+  ln -s i386.img ${Vplus}
   echo "zsyncmake..."
-  zsyncmake -u $(printf "%06i.img" $VERSIONplus) $(printf "%06i.img" $VERSIONplus)
-#  cp i386.img.zsync $(printf "%06i.img.zsync" $VERSIONplus)
-
+  zsyncmake -u ${Vplus} ${Vplus}
 
   if test -f primary-image-* ; then rm primary-image-*; fi
   touch $(printf "primary-image-%06i" $VERSIONplus)
-  echo "$(printf "%06i.img" $VERSIONplus)" >  $(printf "primary-image-%06i" $VERSIONplus)
+  echo ${Vplus} >  $(printf "primary-image-%06i" $VERSIONplus)
   echo $VERSIONplus > version
 
 fi
