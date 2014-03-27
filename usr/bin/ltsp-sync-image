@@ -19,10 +19,9 @@ if test -z "$VERSION_neu"; then exit
 if test "$VERSION"  = "$VERSION_neu"; then
   echo "nicht zu tun"
 else
-  neu=$(printf "%06i.img" $VERSION_neu)
-  echo "copy"
-  cp $(printf "%06i.img" $VERSION) $neu
-  echo "zsync" 
+  echo "copy to new image..."
+  cp $(printf "%06i.img" $VERSION) $(printf "%06i.img" $VERSION_neu) 
+  echo "zsync..." 
   zsync "${SERVER}/${PATH}/${neu}.zsync"
   rm primary-image-*
   wget ${SERVER}/${PATH}/primary-image-$(printf "%06i" $VERSION_neu)
@@ -32,7 +31,7 @@ else
   echo $VERSION_neu > version
 
   #remove old images
-  if test $(printf "%06i.img" $(( $VERSION -10 ))); then
+  if test -f $(printf "%06i.img" $(( $VERSION -10 ))); then
      rm $(printf "%06i.img" $(( $VERSION -10 )))
   fi
 fi
