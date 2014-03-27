@@ -2,7 +2,8 @@
 
 cd /mnt/images
 
-SERVER="http://172.16.42.10/"
+SERVER=$(getltspcfg IMAGE_SERVER)
+PATH=$(getltspcfg IMAGE_PATH)
 
 if test -f version; then
   VERSION=$(cat version)
@@ -10,7 +11,7 @@ else
   VERSION=0
 fi
 
-VERSION_neu="$(wget -O - ${SERVER}/ltsp-images/version 2>/dev/null)"
+VERSION_neu="$(wget -O - ${SERVER}/${PATH}/version 2>/dev/null)"
 
 if test -z "$VERSION_neu"; then exit
  
@@ -22,13 +23,15 @@ else
   echo "copy"
   cp $(printf "%06i.img" $VERSION) $neu
   echo "zsync" 
-  zsync "${SERVER}ltsp-images/${neu}.zsync"
+  zsync "${SERVER}/${PATH}/${neu}.zsync"
   rm primary-image-*
-  wget ${SERVER}ltsp-images/primary-image-$(printf "%06i" $VERSION_neu)
+  wget ${SERVER}/${PATH}/primary-image-$(printf "%06i" $VERSION_neu)
   rm version
-  wget ${SERVER}ltsp-images/version
+  wget ${SERVER}/${PATH}/version
   echo "fertig"
   echo $VERSION_neu > version
+
+  #remove old images
   if test $(printf "%06i.img" $(( $VERSION -10 ))); then
      rm $(printf "%06i.img" $(( $VERSION -10 )))
   fi
