@@ -3,7 +3,7 @@
 cd /opt/ltsp/images
 VERSION=$(cat version)
 
-cp /var/lib/tftpboot/ltsp/i386/lts.conf /etc/lts.conf
+# cp /var/lib/tftpboot/ltsp/i386/lts.conf /etc/lts.conf
 
 if ltsp-update-image --cleanup /; then
 #if true; then
