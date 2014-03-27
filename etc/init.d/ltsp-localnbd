@@ -1,4 +1,4 @@
-x1#! /bin/sh
+#! /bin/sh
 ### BEGIN INIT INFO
 # Provides:          skeleton
 # Required-Start:    $remote_fs $syslog
@@ -13,28 +13,44 @@ x1#! /bin/sh
 
 
 
+# check memory size
+MEMTOT=$(cat /proc/meminfo |grep MemTotal|xargs|cut -d\  -f2)
+if test $MEMTOT -gt 5000000; then
+   LARGE_MEM=true
+else
+   LARGE_MEM=false
+fi
+
+      # update image
+#      if cat /proc/cmdline|grep -q "root=/dev/nbd0"; then
+#        echo -n "copying i386.img to disk..."
+#        cat /dev/nbd0 >/mnt/i386.img
+#        echo "ok"
+#      fi
+      
+      
+      
+
+   
+#else
+#    if $LARGE_MEM; then
+#      mkdir -p /opt/ltsp/images/
+#      ln -s /mnt/images/$(printf "%06i.img" $(cat /mnt/images/version) ) /opt/ltsp/images/i386.img
+#     #dd if=/dev/nbd0 of=/opt/ltsp/images/i386.img
+#    fi
+#fi
+
+}
+
 #
 # Function that starts the daemon/service
 #
 do_start()
 {
-  # mount sda1/vda1
-  IS_MOUNTED=true;
-  if ! mount /dev/sda1 /mnt; then
-    if ! mount /dev/vda1 /mnt; then
-      IS_MOUNTED=false
-    else
-      echo "/dev/vda1 is mounted on /mnt"
-    fi
-  else
-    echo "/dev/sda1 is mounted on /mnt"
-  fi
+      mkdir -p /opt/ltsp/images/
+      ln -s /mnt/images/$(printf "%06i.img" $(cat /mnt/images/version) ) /opt/ltsp/images/i386.img
+      service nbd-server restart
 
-  # get new image
-  ltsp-sync-image &
-
-  /etc/init.d/ltsp-localuser boot
-#  /etc/init.d/ltsp-localnbd start
 }
 
 #
@@ -42,11 +58,7 @@ do_start()
 #
 do_stop()
 {
-  /etc/init.d/ltsp-localuser stop
-# /etc/init.d/ltsp-localnbd
-
-  # umount sda1
-  umount /mnt
+    echo -n ""
 }
 
 #
