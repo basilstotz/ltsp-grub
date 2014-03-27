@@ -1,0 +1,125 @@
+#! /bin/sh
+### BEGIN INIT INFO
+# Provides:          skeleton
+# Required-Start:    $remote_fs $syslog
+# Required-Stop:     $remote_fs $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Example initscript
+# Description:       This file should be used to construct scripts to be
+#                    placed in /etc/init.d.
+### END INIT INFO
+
+
+
+do_update()
+{
+
+
+
+# copy lts.conf (only used by own clients!)
+#tftp  -c $(getltscfg SERVER) get ltsp/i386/lts.conf /etc/lts.conf
+
+# check memory size
+MEMTOT=$(cat /proc/meminfo |grep MemTotal|xargs|cut -d\  -f2)
+if test $MEMTOT -gt 5000000; then
+   LARGE_MEM=true
+else
+   LARGE_MEM=false
+fi
+
+# try to mount sda1 or vda1
+
+#if $IS_MOUNTED; then
+
+#    if test -d /mnt/images/; then 
+ 
+      # update image
+#      if cat /proc/cmdline|grep -q "root=/dev/nbd0"; then
+#        echo -n "copying i386.img to disk..."
+#        cat /dev/nbd0 >/mnt/i386.img
+#        echo "ok"
+#      fi
+      
+       ltsp-sync-image&
+      
+      
+#      mkdir -p /opt/ltsp/images/
+#      ln -s /mnt/images/$(printf "%06i.img" $(cat /mnt/images/version) ) /opt/ltsp/images/i386.img
+#      echo "restarting nbd-server"
+#  
+
+   
+#else
+#    if $LARGE_MEM; then
+#      mkdir -p /opt/ltsp/images/
+#      ln -s /mnt/images/$(printf "%06i.img" $(cat /mnt/images/version) ) /opt/ltsp/images/i386.img
+#     #dd if=/dev/nbd0 of=/opt/ltsp/images/i386.img
+#    fi
+#fi
+
+}
+
+#
+# Function that starts the daemon/service
+#
+do_start()
+{
+  # mount sda1/vda1
+  IS_MOUNTED=true;
+  if ! mount /dev/sda1 /mnt; then
+    if ! mount /dev/vda1 /mnt; then
+      IS_MOUNTED=false
+    else
+      echo "/dev/vda1 is mounted on /mnt"
+    fi
+  else
+    echo "/dev/sda1 is mounted on /mnt"
+  fi
+
+  # get new image
+  ltsp-sync-image &
+
+  /etc/init.d/ltsp-localuser boot
+
+}
+
+#
+# Function that stops the daemon/service
+#
+do_stop()
+{
+  /etc/init.d/ltsp-localuser stop
+
+  # umount sda1
+  umount /mnt
+}
+
+#
+# Function that sends a SIGHUP to the daemon/service
+#
+do_reload() {
+ do_stop
+ do_start
+}
+
+case "$1" in
+  update)
+        do_update
+        ;;
+  start)
+        do_start
+	;;
+  stop)
+        do_stop
+	;;
+  restart|force-reload)
+        do_reload
+	;;
+  *)
+	#echo "Usage: $SCRIPTNAME {start|stop|restart|reload|force-reload}" >&2
+	echo "Usage: $SCRIPTNAME {start|stop|restart|update}" >&2
+	exit 3
+	;;
+esac
+

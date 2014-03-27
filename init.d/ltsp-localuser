@@ -1,0 +1,96 @@
+#! /bin/sh
+### BEGIN INIT INFO
+# Provides:          skeleton
+# Required-Start:    $remote_fs $syslog
+# Required-Stop:     $remote_fs $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Example initscript
+# Description:       This file should be used to construct scripts to be
+#                    placed in /etc/init.d.
+### END INIT INFO
+
+
+do_first_start(){
+
+       cp /etc/passwd /mnt/local/passwd.ori
+       cp /etc/shadow /mnt/local/shadow.ori
+       cp /etc/group /mnt/local/group.ori
+       do_start
+}
+
+#
+# Function that starts the daemon/service
+#
+do_start()
+{
+  # restore local user setup
+
+  # bind home_local
+  mount --bind /mnt/home /home_local
+
+  if test -f /mnt/local/passwd; then
+
+       cat /mnt/local/passwd.ori /mnt/local/passwd >/etc/passwd
+       cat /mnt/local/group.ori /mnt/local/group >/etc/group
+       cat /mnt/local/shadow.ori /mnt/local/shadow >/etc/shadow
+
+       cp /etc/passwd.tmp /etc/passwd
+       cp /etc/group.tmp /etc/group
+       cp /etc/shadow.tmp /etc/shadow
+
+       rm /etc/passwd.tmp
+       rm /etc/group.tmp
+       rm /etc/shadow.tmp
+  fi
+}
+
+#
+# Function that stops the daemon/service
+#
+do_stop()
+{
+  # save local user setup
+  cat /etc/passwd | grep home_local >/mnt/local/passwd
+  cp /mnt/local/shadow /mnt/local/shadow.old
+  cp /mnt/local/group /mnt/local/group.old
+  echo "" > /mnt/local/shadow
+  echo "" > /mnt/local/group
+  for name in "$(cat /mnt/local/passwd|cut -d: -f1|xargs)"; do
+     cat /etc/shadow|grep "^$name:" >>/mnt/local/shadow
+     cat /etc/group|grep "^$name:" >>/mnt/local/group
+  done
+
+  # umount /home_local
+  umount /home_local
+
+}
+
+#
+# Function that sends a SIGHUP to the daemon/service
+#
+do_reload() {
+ do_stop
+ do_start
+}
+
+case "$1" in
+  boot)
+        do_first_start
+        ;;
+  start)
+        do_start
+	;;
+  stop)
+        do_stop
+	;;
+  restart|force-reload)
+        do_reload
+	;;
+  *)
+	#echo "Usage: $SCRIPTNAME {start|stop|restart|reload|force-reload}" >&2
+	echo "Usage: $SCRIPTNAME {start|stop|restart}" >&2
+	exit 3
+	;;
+esac
+
