@@ -20,3 +20,7 @@ ToDo:
 * Persistent cups support
 * Persistent wlan support
 
+
+
+These scripts are suited for Ubuntu 12.04, with the greek ltsp-pnp. They are 
+to be applied at the 'master' installation, where the image is created.
