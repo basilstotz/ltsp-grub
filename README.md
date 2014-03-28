@@ -60,6 +60,9 @@ to be applied at the 'master' installation, where the image is created:
 * Install the base system using the instructions on
   http://labs.opinsys.com/blog/2014/01/31/how-to-boot-ltsp-client-from-harddrive-using-grub/
 * Make the directories 'local' 'images' and 'home'
-* Copy manualy an image ( eg. 000023.img) from the server to the directory images
+* Copy the image (eg. 000023.img) from the server to the directory 'images'
 * Copy the file 'version' to the directory images
+* Copy the file 'primary-image-xxxxx' (eg. primary-image-000023) to the directory
+* Reboot
+* Add a local user (adduser ....) as root
 
