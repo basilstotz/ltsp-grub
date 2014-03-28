@@ -48,7 +48,7 @@ to be applied at the 'master' installation, where the image is created:
 * Then :
     * ~# git clone https://github.com/basilstotz/ltsp-image
     * ~# cd ltsp-image
-    * ~* ./install.sh
+    * ~# ./install.sh
 * Edit /etc/lts.conf to fit your needs: Specially set the IMAGE_SERVER and IMAGE_PATH variable
 * use ltsp-make-image to generate a new image. (ltsp-make-image is just a wrapper
   around ltsp-update-image)
