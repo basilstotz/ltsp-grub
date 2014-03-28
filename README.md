@@ -10,7 +10,7 @@ This is work in progress. Do not use it in production environment!
 The basic idea if from http://github.com/opinsys/ltsp-laptop.git .
 
 
-# Features:
+# Features
 
 * No network is needed: user homes and login credentials are local 
 
@@ -22,7 +22,7 @@ The basic idea if from http://github.com/opinsys/ltsp-laptop.git .
 * Ldap users can also logon. In this case the home directory is mounted via nfs.
 
 
-# ToDo:
+# ToDo
 
 * Automated installation of the base system
 * Persistent cups support
@@ -30,16 +30,18 @@ The basic idea if from http://github.com/opinsys/ltsp-laptop.git .
 * and much more
 
 
-# Issues:
+# Issues
 
 * The client needs network (dhcp) to boot. Though the running systen does not need
   a network connection.
 
-* The install.sh script is verry crude
+* The install.sh script is very crude
+
+* Some more.....
  
 
 
-# Server Installation:
+# Server Installation
 
 These scripts are suited for Ubuntu 12.04, with the greek ltsp-pnp. They are 
 to be applied at the 'master' installation, where the image is created:
@@ -58,7 +60,7 @@ to be applied at the 'master' installation, where the image is created:
   around ltsp-update-image)
 
 
-# Client Installation:
+# Client Installation
 
 * Install the base system using the instructions on
   http://labs.opinsys.com/blog/2014/01/31/how-to-boot-ltsp-client-from-harddrive-using-grub/
