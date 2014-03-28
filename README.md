@@ -59,6 +59,8 @@ to be applied at the 'master' installation, where the image is created:
 * use ltsp-make-image to generate a new image. (ltsp-make-image is just a wrapper
   around ltsp-update-image)
 
+* Edit /etc/lts.conf to fit your needs: Specially set the IMAGE_SERVER and IMAGE_PATH variable
+
 
 # Client Installation
 
