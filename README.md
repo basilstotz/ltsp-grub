@@ -4,10 +4,10 @@ ltsp-image
 The aim is to have a ubuntu ltsp client, which behaves like an ordinary standalone 
 ubuntu client. 
 
-This is work in progress. Do not use it in production environment!
+This is work in progress. Though it's working, is is not very usefull at the moment!
 
 
-The basic idea is from http://github.com/opinsys/ltsp-laptop.git.
+The basic idea (and the file 'grub.cfg') is from http://github.com/opinsys/ltsp-laptop.git.
 
 
 # Features
@@ -46,7 +46,7 @@ to be applied at the 'master' installation, where the image is created:
 * Install ltsp-pnp. Instructions are on
         https://help.ubuntu.com/community/UbuntuLTSP/ltsp-pnp
 * Then :
-    * ~# git clone https://github.com/basilstotz/ltsp-image
+    * ~# git clone https://github.com/basilstotz/ltsp-image.git
     * ~# cd ltsp-image
     * ~# ./install.sh
 * Edit /etc/lts.conf to fit your needs: Specially set the IMAGE_SERVER and IMAGE_PATH variable
@@ -64,5 +64,7 @@ to be applied at the 'master' installation, where the image is created:
 * Copy the file 'version' to the directory images
 * Copy the file 'primary-image-xxxxx' (eg. primary-image-000023) to the directory
 * Reboot
-* Add a local user (adduser ....) as root
+* Add a local user (with sudo rights!)
+* Enjoy
+
 
