@@ -7,7 +7,7 @@ ubuntu client.
 This is work in progress. Do not use it in production environment!
 
 
-The basic idea if from http://github.com/opinsys/ltsp-laptop.git .
+The basic idea is from http://github.com/opinsys/ltsp-laptop.git.
 
 
 # Features
@@ -19,7 +19,6 @@ The basic idea if from http://github.com/opinsys/ltsp-laptop.git .
 * The ltsp image is updated in the background, while the system is running. The new 
   image will be applied at next boot.
 
-* Ldap users can also logon. In this case the home directory is mounted via nfs.
 
 
 # ToDo
