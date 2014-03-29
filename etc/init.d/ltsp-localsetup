@@ -11,11 +11,6 @@ x1#! /bin/sh
 ### END INIT INFO
 
 
-is_loop(){
-}
-
-
-
 #
 # Function that starts the daemon/service
 #
