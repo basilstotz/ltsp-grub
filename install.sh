@@ -3,7 +3,7 @@
 # copy files
 cp usr/bin/* /usr/bin/.
 cp etc/init.d/* /etc/init.d/.
-cp etc/lts.conf /etc/.
+#cp etc/lts.conf /etc/.
 
 # sysvinit
 update-rc.d ltsp-localsetup defaults

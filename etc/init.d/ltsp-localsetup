@@ -11,6 +11,9 @@ x1#! /bin/sh
 ### END INIT INFO
 
 
+is_loop(){
+}
+
 
 
 #
@@ -18,6 +21,7 @@ x1#! /bin/sh
 #
 do_start()
 {
+
   # mount sda1/vda1
   IS_MOUNTED=true;
   if ! mount /dev/sda1 /mnt; then
@@ -56,6 +60,11 @@ do_reload() {
  do_stop
  do_start
 }
+
+
+# main
+
+if ! cat /proc/cmdline | grep -q "loop"; then exit; fi
 
 case "$1" in
   update)
