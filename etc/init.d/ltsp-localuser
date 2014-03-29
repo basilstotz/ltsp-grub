@@ -23,17 +23,9 @@ do_start()
   mount --bind /mnt/home /home
 
   if test -f /mnt/local/passwd; then
-       cat /rofs/etc/passwd /mnt/local/passwd >/etc/passwd.tmp
-       cat /rofs/etc/group /mnt/local/group >/etc/group.tmp
-       cat /rofs/etc/shadow /mnt/local/shadow >/etc/shadow.tmp
-
-       cp /etc/passwd.tmp /etc/passwd
-       cp /etc/group.tmp /etc/group
-       cp /etc/shadow.tmp /etc/shadow
-
-       rm /etc/passwd.tmp
-       rm /etc/group.tmp
-       rm /etc/shadow.tmp
+       cat /rofs/etc/passwd /mnt/local/passwd >/etc/passwd
+       cat /rofs/etc/group /mnt/local/group >/etc/group
+       cat /rofs/etc/shadow /mnt/local/shadow >/etc/shadow
   fi
 
 }
@@ -44,9 +36,10 @@ do_start()
 do_stop()
 {
   # save local user setup
-  cat /etc/passwd | grep home_local >/mnt/local/passwd
-  cp /mnt/local/shadow /mnt/local/shadow.old
-  cp /mnt/local/group /mnt/local/group.old
+  echo "" > /mnt/local/passwd
+  for user in "$(ls /nmt/home/)"; do
+    cat /etc/passwd | grep "^$user" >>/mnt/local/passwd
+  done
   echo "" > /mnt/local/shadow
   echo "" > /mnt/local/group
   for name in "$(cat /mnt/local/passwd|cut -d: -f1|xargs)"; do
@@ -68,9 +61,6 @@ do_reload() {
 }
 
 case "$1" in
-  boot)
-        do_first_start
-        ;;
   start)
         do_start
 	;;
