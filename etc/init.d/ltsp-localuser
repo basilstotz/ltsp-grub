@@ -11,13 +11,6 @@
 ### END INIT INFO
 
 
-do_first_start(){
-
-       cp /etc/passwd /mnt/local/passwd.ori
-       cp /etc/shadow /mnt/local/shadow.ori
-       cp /etc/group /mnt/local/group.ori
-       do_start
-}
 
 #
 # Function that starts the daemon/service
@@ -27,13 +20,12 @@ do_start()
   # restore local user setup
 
   # bind home_local
-  mount --bind /mnt/home /home_local
+  mount --bind /mnt/home /home
 
   if test -f /mnt/local/passwd; then
-
-       cat /mnt/local/passwd.ori /mnt/local/passwd >/etc/passwd
-       cat /mnt/local/group.ori /mnt/local/group >/etc/group
-       cat /mnt/local/shadow.ori /mnt/local/shadow >/etc/shadow
+       cat /rofs/etc/passwd /mnt/local/passwd >/etc/passwd.tmp
+       cat /rofs/etc/group /mnt/local/group >/etc/group.tmp
+       cat /rofs/etc/shadow /mnt/local/shadow >/etc/shadow.tmp
 
        cp /etc/passwd.tmp /etc/passwd
        cp /etc/group.tmp /etc/group
@@ -43,6 +35,7 @@ do_start()
        rm /etc/group.tmp
        rm /etc/shadow.tmp
   fi
+
 }
 
 #
@@ -62,7 +55,7 @@ do_stop()
   done
 
   # umount /home_local
-  umount /home_local
+  umount /home
 
 }
 

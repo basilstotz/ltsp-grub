@@ -19,15 +19,11 @@ x1#! /bin/sh
 do_start()
 {
   # mount sda1/vda1
-  IS_MOUNTED=true;
+
   if ! mount /dev/sda1 /mnt; then
-    if ! mount /dev/vda1 /mnt; then
-      IS_MOUNTED=false
-    else
+    if  mount /dev/vda1 /mnt; then
       echo "/dev/vda1 is mounted on /mnt"
     fi
-  else
-    echo "/dev/sda1 is mounted on /mnt"
   fi
 
   # get new image
