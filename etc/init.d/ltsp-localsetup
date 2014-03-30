@@ -29,6 +29,8 @@ do_start()
     echo "/dev/sda1 is mounted on /mnt"
   fi
 
+  if ! $IS_MOUNTED; then exit 1; fi
+
   # get new image
   ltsp-sync-image &
 
@@ -62,21 +64,18 @@ do_reload() {
 if ! cat /proc/cmdline | grep -q "loop"; then exit; fi
 
 case "$1" in
-  update)
-        do_update
-        ;;
   start)
         do_start
 	;;
   stop)
         do_stop
 	;;
-  restart|force-reload)
+  restart|force-reload|reload)
         do_reload
 	;;
   *)
 	#echo "Usage: $SCRIPTNAME {start|stop|restart|reload|force-reload}" >&2
-	echo "Usage: $SCRIPTNAME {start|stop|restart|update}" >&2
+	echo "Usage: $SCRIPTNAME {start|stop|restart|reload}" >&2
 	exit 3
 	;;
 esac
