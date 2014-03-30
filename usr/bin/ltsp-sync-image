@@ -9,6 +9,8 @@ if test -f version; then
   VERSION=$(cat version)
 else
   VERSION=0
+  touch version
+  echo "0" > version
 fi
 
 VERSION_neu="$(wget -O - ${SERVER}/${PATH}/version 2>/dev/null)"
@@ -22,17 +24,19 @@ else
   echo "copy to new image..."
   cp $(printf "%06i.img" $VERSION) $(printf "%06i.img" $VERSION_neu) 
   echo "zsync..." 
-  zsync "${SERVER}/${PATH}/${neu}.zsync"
-  rm primary-image-*
-  wget ${SERVER}/${PATH}/primary-image-$(printf "%06i" $VERSION_neu)
-  rm version
-  wget ${SERVER}/${PATH}/version
-  echo "fertig"
-  echo $VERSION_neu > version
+  if zsync "${SERVER}/${PATH}/${neu}.zsync"; then
 
-  #remove old images
-  if test -f $(printf "%06i.img" $(( $VERSION -10 ))); then
-     rm $(printf "%06i.img" $(( $VERSION -10 )))
+    # sync meta info
+    rm primary-image-*
+    wget ${SERVER}/${PATH}/primary-image-$(printf "%06i" $VERSION_neu)
+    rm version
+    wget ${SERVER}/${PATH}/version
+    echo "fertig"
+
+    #remove old images
+    if test -f $(printf "%06i.img" $(( $VERSION -10 ))); then
+      rm $(printf "%06i.img" $(( $VERSION -10 )))
+    fi
   fi
 fi
 
