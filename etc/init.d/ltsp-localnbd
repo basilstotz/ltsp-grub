@@ -47,10 +47,13 @@ fi
 #
 do_start()
 {
-      mkdir -p /opt/ltsp/images/
-      ln -s /mnt/images/$(printf "%06i.img" $(cat /mnt/images/version) ) /opt/ltsp/images/i386.img
+   if test -d /mnt/images; then      
+      BOOT=$(cat /proc/cmdline|cut -d\  -f6|cut -d= -f2)     
+      if ! test -d /opt/ltsp/images/; then mkdir -p /opt/ltsp/images/; fi
+      if test -f /opt/ltsp/images/i386.img; then rm /opt/ltsp/images/i386.img;fi
+      ln -s /mnt/${BOOT} /opt/ltsp/images/i386.img
       service nbd-server restart
-
+   fi
 }
 
 #
@@ -68,6 +71,8 @@ do_reload() {
  do_stop
  do_start
 }
+
+if ! cat proc/cmdline|grep -q loop; then exit 1; fi
 
 case "$1" in
   update)

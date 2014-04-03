@@ -45,7 +45,7 @@ do_start()
   nice ltsp-sync-image &
 
 #  /etc/init.d/ltsp-localuser boot
-#  /etc/init.d/ltsp-localnbd start
+   /etc/init.d/ltsp-localnbd start
 }
 
 #
@@ -54,10 +54,10 @@ do_start()
 do_stop()
 {
 #  /etc/init.d/ltsp-localuser stop
-# /etc/init.d/ltsp-localnbd stop
+   /etc/init.d/ltsp-localnbd stop
 
-  # umount sda1
-  umount /mnt
+   # umount sda1
+   umount /mnt
 }
 
 #
