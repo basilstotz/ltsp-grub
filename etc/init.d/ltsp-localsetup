@@ -17,7 +17,7 @@
 #
 do_start()
 {
-  # mount partition with images
+  # try to mount partition with images
   PARTS="sdc1 sdb1 sda1 vda1"
   CURRENT=""
   umount /mnt
@@ -34,13 +34,15 @@ do_start()
         fi
       fi
   done
-  if test -z "$CURRENT"; then echo "error: no disk";exit 1; fi
 
-  echo "i will use $CURRENT"
-
+  # exit if none found
+  if test -z "$CURRENT"; then 
+     echo "error: no disk"
+     exit 1 
+  fi
 
   # get new image
-  ltsp-sync-image &
+  nice ltsp-sync-image &
 
 #  /etc/init.d/ltsp-localuser boot
 #  /etc/init.d/ltsp-localnbd start
