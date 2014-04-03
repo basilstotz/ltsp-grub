@@ -1,4 +1,4 @@
-x1#! /bin/sh
+#! /bin/sh
 ### BEGIN INIT INFO
 # Provides:          skeleton
 # Required-Start:    $remote_fs $syslog
@@ -20,8 +20,10 @@ do_start()
 
   CURRENT=""
   
-  for P in "$PARTS"; do
+  umount /mnt
+  for P in $PARTS; do
       if ! test -z "$CURRENT"; then continue; fi
+      echo "trying: /dev/$P"
       if mount /dev/$P /mnt/; then
         if test -f /mnt/images; then
            CURRENT=$P
@@ -31,7 +33,8 @@ do_start()
       fi
   done
 
-  if test -z "$CURRENT" then exit 1; fi
+
+  if test -z "$CURRENT"; then echo "error: no disk";exit 1; fi
 
   # get new image
   ltsp-sync-image &
