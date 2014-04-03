@@ -3,7 +3,7 @@
 if cd /mnt/images; then
 
 
-if test -z $1; then
+if test -z "$1"; then
   SERVER="http://172.16.42.10"
   PATH="ltsp-images"
   #SERVER=$(/usr/bin/getltscfg IMAGE_SERVER)
