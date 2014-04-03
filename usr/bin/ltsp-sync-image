@@ -5,9 +5,13 @@ cd /mnt/images
 #SERVER=$(/usr/bin/getltscfg IMAGE_SERVER)
 #PATH=$(/usr/bin/getltscfg IMAGE_PATH)
 
-
-SERVER="http://172.16.42.10"
-PATH="ltsp-images"
+if test -z $1; then
+  SERVER="http://172.16.42.10"
+  PATH="ltsp-images"
+  ALL="$SERVER/$PATH"
+else
+  ALL="$1"
+fi
 
 if test -f version; then
   VERSION=$(/bin/cat version)
@@ -18,10 +22,10 @@ else
 fi
 
 echo "*"
-echo "wget -O - ${SERVER}/${PATH}/version 2>/dev/null"
+echo "wget -O - ${ALL}/version 2>/dev/null"
 echo "*"
 
-VERSION_neu="$(/usr/bin/wget -O - ${SERVER}/${PATH}/version 2>/dev/null)"
+VERSION_neu="$(/usr/bin/wget -O - ${ALL}/version 2>/dev/null)"
 
 if test -z "$VERSION_neu"; then echo "could not read new version:${VERSION_neu}:";exit 1; fi
  
@@ -32,19 +36,20 @@ else
   echo "copy to new image..."
   /bin/cp $(/usr/bin/printf "%06i.img" $VERSION) $(/usr/bin/printf "%06i.img" $VERSION_neu) 
   echo "zsync..." 
-  if /usr/bin/zsync "${SERVER}/${PATH}/$(/usr/bin/printf "%06i.img" $VERSION_neu).zsync"; then
+  if /usr/bin/zsync "${ALL}/$(/usr/bin/printf "%06i.img" $VERSION_neu).zsync"; then
 
     # sync meta info
     /bin/rm primary-image-*
-    /usr/bin/wget ${SERVER}/${PATH}/primary-image-$(/usr/bin/printf "%06i" $VERSION_neu)
+    /usr/bin/wget ${ALL}/primary-image-$(/usr/bin/printf "%06i" $VERSION_neu)
     /bin/rm version
-    /usr/bin/wget ${SERVER}/${PATH}/version
+    /usr/bin/wget ${ALL}/version
     echo "fertig"
 
     #remove old images
-    if test -f $(/usr/bin/printf "%06i.img" $(( $VERSION -10 ))); then
-      /bin/rm $(/usr/bin/printf "%06i.img" $(( $VERSION -10 )))
+    if test -f $(/usr/bin/printf "%06i.img" $(( $VERSION -3 ))); then
+      /bin/rm $(/usr/bin/printf "%06i.img" $(( $VERSION -3 )))
     fi
+    /bin/rm "*.old"
   fi
 fi
 
