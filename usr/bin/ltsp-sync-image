@@ -21,9 +21,6 @@ else
   echo "0" > version
 fi
 
-echo "*"
-echo "wget -O - ${ALL}/version 2>/dev/null"
-echo "*"
 
 VERSION_neu="$(/usr/bin/wget -O - ${ALL}/version 2>/dev/null)"
 
@@ -39,13 +36,18 @@ else
   if /usr/bin/zsync "${ALL}/$(/usr/bin/printf "%06i.img" $VERSION_neu).zsync"; then
 
     # sync meta info
+    echo "rm primary"
     /bin/rm primary-image-*
+    echo "wget primary"
     /usr/bin/wget ${ALL}/primary-image-$(/usr/bin/printf "%06i" $VERSION_neu)
+   echo "rm version"
     /bin/rm version
+    echo "wget version"
     /usr/bin/wget ${ALL}/version
     echo "fertig"
 
     #remove old images
+    echo "remove oldies"
     if test -f $(/usr/bin/printf "%06i.img" $(( $VERSION -3 ))); then
       /bin/rm $(/usr/bin/printf "%06i.img" $(( $VERSION -3 )))
     fi
