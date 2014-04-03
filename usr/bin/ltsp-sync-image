@@ -35,13 +35,9 @@ else
   echo "zsync..." 
   if /usr/bin/zsync "${ALL}/$(/usr/bin/printf "%06i.img" $VERSION_neu).zsync"; then
     # sync meta info
-    echo "rm primary"
     /bin/rm primary-image-*
-    echo "wget primary"
     /usr/bin/wget ${ALL}/primary-image-$(/usr/bin/printf "%06i" $VERSION_neu)
-   echo "rm version"
     /bin/rm version
-    echo "wget version"
     /usr/bin/wget ${ALL}/version
     echo "fertig"
 
@@ -50,7 +46,9 @@ else
     if test -f $(/usr/bin/printf "%06i.img" $(( $VERSION -3 ))); then
       /bin/rm $(/usr/bin/printf "%06i.img" $(( $VERSION -3 )))
     fi
-    /bin/rm *.old
+    if test -f *.zs-old; then 
+      /bin/rm *.zs-old 
+    fi
     echo "ok"
   fi
 fi
