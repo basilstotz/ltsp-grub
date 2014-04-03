@@ -10,6 +10,7 @@ x1#! /bin/sh
 #                    placed in /etc/init.d.
 ### END INIT INFO
 
+PARTS="vda1 sda1 sdb1 sdc1"
 
 #
 # Function that starts the daemon/service
@@ -17,24 +18,25 @@ x1#! /bin/sh
 do_start()
 {
 
-  # mount sda1/vda1
-  IS_MOUNTED=true;
-  if ! mount /dev/sda1 /mnt; then
-    if ! mount /dev/vda1 /mnt; then
-      IS_MOUNTED=false
-    else
-      echo "/dev/vda1 is mounted on /mnt"
-    fi
-  else
-    echo "/dev/sda1 is mounted on /mnt"
-  fi
+  CURRENT=""
+  
+  for P in "$PARTS"; do
+      if ! test -z "$CURRENT"; then continue; fi
+      if mount /dev/$P /mnt/; then
+        if test -f /mnt/images; then
+           CURRENT=$P
+        else
+           umount /mnt/
+        fi
+      fi
+  done
 
-  if ! $IS_MOUNTED; then exit 1; fi
+  if test -z "$CURRENT" then exit 1; fi
 
   # get new image
   ltsp-sync-image &
 
-  /etc/init.d/ltsp-localuser boot
+#  /etc/init.d/ltsp-localuser boot
 #  /etc/init.d/ltsp-localnbd start
 }
 
@@ -43,7 +45,7 @@ do_start()
 #
 do_stop()
 {
-  /etc/init.d/ltsp-localuser stop
+#  /etc/init.d/ltsp-localuser stop
 # /etc/init.d/ltsp-localnbd stop
 
   # umount sda1
