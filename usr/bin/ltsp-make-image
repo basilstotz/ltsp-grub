@@ -18,11 +18,11 @@ if ltsp-update-image --cleanup /; then
   Vnull=$(printf "%06i.img"  $(( $VERSION +0 )) )
   Vminus=$(printf "%06i.img" $(( $VERSION -1 )) )
 
-  rm ${Vminus}
-  rm ${Vminus}.zsync 
+  if test -f ${Vminus}; then rm ${Vminus}; fi
+  if test -f ${Vminus}; then rm ${Vminus}.zsync; fi 
 
-  rm ${Vnull} 
-  rm ${Vnull}.zsync
+  if test -f ${Vnull}; then rm ${Vnull}; fi 
+  if test -f ${Vnull}; then rm ${Vnull}.zsync; fi
 
   ln -s i386.img.old ${Vnull} 
   echo "zsyncmake..."
