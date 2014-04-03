@@ -10,31 +10,34 @@
 #                    placed in /etc/init.d.
 ### END INIT INFO
 
-PARTS="vda1 sda1 sdb1 sdc1"
+
 
 #
 # Function that starts the daemon/service
 #
 do_start()
 {
-
+  # mount partition with images
+  PARTS="sdc1 sdb1 sda1 vda1"
   CURRENT=""
-  
   umount /mnt
   for P in $PARTS; do
       if ! test -z "$CURRENT"; then continue; fi
-      echo "trying: /dev/$P"
+      echo -n "trying: /dev/$P ..."
       if mount /dev/$P /mnt/; then
-        if test -f /mnt/images; then
+        if test -d /mnt/images; then
            CURRENT=$P
+           echo "ok"
         else
            umount /mnt/
+           echo "no"
         fi
       fi
   done
-
-
   if test -z "$CURRENT"; then echo "error: no disk";exit 1; fi
+
+  echo "i will use $CURRENT"
+
 
   # get new image
   ltsp-sync-image &
