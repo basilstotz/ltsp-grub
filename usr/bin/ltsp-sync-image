@@ -1,13 +1,13 @@
 #!/bin/sh
 
-cd /mnt/images
+if cd /mnt/images; then
 
-#SERVER=$(/usr/bin/getltscfg IMAGE_SERVER)
-#PATH=$(/usr/bin/getltscfg IMAGE_PATH)
 
 if test -z $1; then
   SERVER="http://172.16.42.10"
   PATH="ltsp-images"
+  #SERVER=$(/usr/bin/getltscfg IMAGE_SERVER)
+  #PATH=$(/usr/bin/getltscfg IMAGE_PATH)
   ALL="$SERVER/$PATH"
 else
   ALL="$1"
@@ -30,11 +30,10 @@ if test -z "$VERSION_neu"; then echo "could not read new version:${VERSION_neu}:
 if test "$VERSION"  = "$VERSION_neu"; then
   echo "nicht zu tun"
 else
-  echo "copy to new image..."
+  echo "copy $(/usr/bin/printf "%06i.img" $VERSION) to $(/usr/bin/printf "%06i.img" $VERSION_neu)..."
   /bin/cp $(/usr/bin/printf "%06i.img" $VERSION) $(/usr/bin/printf "%06i.img" $VERSION_neu) 
   echo "zsync..." 
   if /usr/bin/zsync "${ALL}/$(/usr/bin/printf "%06i.img" $VERSION_neu).zsync"; then
-
     # sync meta info
     echo "rm primary"
     /bin/rm primary-image-*
@@ -51,8 +50,12 @@ else
     if test -f $(/usr/bin/printf "%06i.img" $(( $VERSION -3 ))); then
       /bin/rm $(/usr/bin/printf "%06i.img" $(( $VERSION -3 )))
     fi
-    /bin/rm "*.old"
+    /bin/rm *.old
+    echo "ok"
   fi
 fi
 
+else # if cd /mnt/images
+  echo "error: could not cd to /mnt/images"
+fi
 exit
