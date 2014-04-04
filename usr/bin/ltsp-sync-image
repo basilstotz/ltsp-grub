@@ -55,5 +55,6 @@ fi
 
 else # if cd /mnt/images
   echo "error: could not cd to /mnt/images"
+  exit 1
 fi
 exit

@@ -40,7 +40,7 @@ fi
 #    fi
 #fi
 
-}
+
 
 #
 # Function that starts the daemon/service
@@ -53,7 +53,7 @@ do_start()
       if test -f /opt/ltsp/images/i386.img; then 
          rm /opt/ltsp/images/i386.img;
       fi
-      chmod a+r /mnt/${BOOT}
+      chmod a+r /mnt/images/*.img
       ln -s /mnt/${BOOT} /opt/ltsp/images/i386.img
       service nbd-server restart
    fi
