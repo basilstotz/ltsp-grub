@@ -40,12 +40,23 @@ do_start()
      echo "error: no disk"
      exit 1 
   fi
+ 
+  #prepare local nbd
+  BOOT=$(cat /proc/cmdline|cut -d\  -f6|cut -d= -f2)     
+  if ! test -d /opt/ltsp/images/; then mkdir -p /opt/ltsp/images/; fi
+  if test -f /opt/ltsp/images/i386.img; then 
+         rm /opt/ltsp/images/i386.img;
+  fi
+  chmod a+r /mnt/images/*.img
+  ln -s /mnt/${BOOT} /opt/ltsp/images/i386.img
+  service nbd-server restart
 
-  # get new image
+
+  # sync new image
   nice ltsp-sync-image &
 
 #  /etc/init.d/ltsp-localuser boot
-   /etc/init.d/ltsp-localnbd start
+#   /etc/init.d/ltsp-localnbd start
 }
 
 #
@@ -54,7 +65,7 @@ do_start()
 do_stop()
 {
 #  /etc/init.d/ltsp-localuser stop
-   /etc/init.d/ltsp-localnbd stop
+#   /etc/init.d/ltsp-localnbd stop
 
    # umount sda1
    umount /mnt
