@@ -50,7 +50,10 @@ do_start()
    if test -d /mnt/images; then      
       BOOT=$(cat /proc/cmdline|cut -d\  -f6|cut -d= -f2)     
       if ! test -d /opt/ltsp/images/; then mkdir -p /opt/ltsp/images/; fi
-      if test -f /opt/ltsp/images/i386.img; then rm /opt/ltsp/images/i386.img;fi
+      if test -f /opt/ltsp/images/i386.img; then 
+         rm /opt/ltsp/images/i386.img;
+      fi
+      chmod a+r /mnt/${BOOT}
       ln -s /mnt/${BOOT} /opt/ltsp/images/i386.img
       service nbd-server restart
    fi
