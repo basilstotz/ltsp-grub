@@ -23,9 +23,9 @@ do_sync()
     PATH="ltsp-images"
     #SERVER=$(getltscfg IMAGE_SERVER)
     #PATH=$(getltscfg IMAGE_PATH)
-    ALL="$SERVER/$PATH"
+    URL="$SERVER/$PATH"
   else
-    ALL="$1"
+    URL="$1"
   fi
 
   if test -f version; then
@@ -37,24 +37,27 @@ do_sync()
   fi
 
 
-  VERSION_neu="$(wget -O - ${ALL}/version 2>/dev/null)"
+  VERSION_neu="$(wget -O - ${URL}/version 2>/dev/null)"
 
-  if test -z "$VERSION_neu"; then echo "could not read new version:${VERSION_neu}:";exit 1; fi
+  if test -z "$VERSION_neu"; then 
+     echo "could not read new version:${VERSION_neu}:"
+     exit 1
+  fi
  
 
   if test "$VERSION"  = "$VERSION_neu"; then
-    echo "nicht zu tun"
+    echo "nothing to do"
   else
     echo "copy $(printf "%06i.img" $VERSION) to $(printf "%06i.img" $VERSION_neu)..."
     cp $(printf "%06i.img" $VERSION) $(printf "%06i.img" $VERSION_neu) 
     echo "zsync..." 
-    if zsync "${ALL}/$(printf "%06i.img" $VERSION_neu).zsync"; then
+    if zsync "${URL}/$(printf "%06i.img" $VERSION_neu).zsync"; then
       # sync meta info
       rm primary-image-*
-      wget ${ALL}/primary-image-$(printf "%06i" $VERSION_neu)
+      wget ${URL}/primary-image-$(printf "%06i" $VERSION_neu)
       rm version
-      wget ${ALL}/version
-      echo "fertig"
+      wget ${URL}/version
+      echo "done"
 
       #remove old images
       echo "remove oldies"
@@ -64,7 +67,7 @@ do_sync()
       if test -f *.zs-old; then 
         rm *.zs-old 
       fi
-      #change permission
+      #change permissions
       chmod a+r /mnt/images/*.img
 
       echo "ok"
@@ -112,14 +115,13 @@ do_start()
   fi
   ln -s /mnt/${BOOT} /opt/ltsp/images/i386.img
 
+  # realy needed?
   service nbd-server restart
 
 
   # sync image in background
   nice $0 sync &
 
-#  /etc/init.d/ltsp-localuser boot
-#   /etc/init.d/ltsp-localnbd start
 }
 
 #
@@ -127,10 +129,6 @@ do_start()
 #
 do_stop()
 {
-#  /etc/init.d/ltsp-localuser stop
-#   /etc/init.d/ltsp-localnbd stop
-
-   # umount sda1
    umount /mnt
 }
 
