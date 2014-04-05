@@ -148,18 +148,19 @@ main(){
   case "$1" in
     sync)
         do_sync
+        ;;
     start)
         do_start
 	;;
     stop)
         do_stop
 	;;
-    restart|force-reload|reload)
+    restart|reload)
         do_reload
 	;;
     *)
 	#echo "Usage: $SCRIPTNAME {start|stop|restart|reload|force-reload}" >&2
-	echo "Usage: $SCRIPTNAME {start|stop|restart|reload}" >&2
+	echo "Usage: $SCRIPTNAME {start|stop|restart|reload|sync}" >&2
 	exit 3
 	;;
   esac
