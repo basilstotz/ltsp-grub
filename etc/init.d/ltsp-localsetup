@@ -10,7 +10,67 @@
 #                    placed in /etc/init.d.
 ### END INIT INFO
 
+do_sync()
+{
+  if ! cd /mnt/images/; then 
+    echo "error: disk not mounted"
+    exit 1
+  fi
 
+
+  if test -z "$1"; then
+    SERVER="http://172.16.42.10"
+    PATH="ltsp-images"
+    #SERVER=$(getltscfg IMAGE_SERVER)
+    #PATH=$(getltscfg IMAGE_PATH)
+    ALL="$SERVER/$PATH"
+  else
+    ALL="$1"
+  fi
+
+  if test -f version; then
+    VERSION=$(/bin/cat version)
+  else
+    VERSION=0
+    touch version
+    echo "0" > version
+  fi
+
+
+  VERSION_neu="$(wget -O - ${ALL}/version 2>/dev/null)"
+
+  if test -z "$VERSION_neu"; then echo "could not read new version:${VERSION_neu}:";exit 1; fi
+ 
+
+  if test "$VERSION"  = "$VERSION_neu"; then
+    echo "nicht zu tun"
+  else
+    echo "copy $(printf "%06i.img" $VERSION) to $(printf "%06i.img" $VERSION_neu)..."
+    cp $(printf "%06i.img" $VERSION) $(printf "%06i.img" $VERSION_neu) 
+    echo "zsync..." 
+    if zsync "${ALL}/$(printf "%06i.img" $VERSION_neu).zsync"; then
+      # sync meta info
+      rm primary-image-*
+      wget ${ALL}/primary-image-$(printf "%06i" $VERSION_neu)
+      rm version
+      wget ${ALL}/version
+      echo "fertig"
+
+      #remove old images
+      echo "remove oldies"
+      if test -f $(printf "%06i.img" $(( $VERSION -3 ))); then
+        rm $(printf "%06i.img" $(( $VERSION -3 )))
+      fi
+      if test -f *.zs-old; then 
+        rm *.zs-old 
+      fi
+      #change permission
+      chmod a+r /mnt/images/*.img
+
+      echo "ok"
+    fi
+  fi
+}
 
 #
 # Function that starts the daemon/service
@@ -42,18 +102,21 @@ do_start()
   fi
  
   #prepare local nbd
-  BOOT=$(cat /proc/cmdline|cut -d\  -f6|cut -d= -f2)     
-  if ! test -d /opt/ltsp/images/; then mkdir -p /opt/ltsp/images/; fi
-  if test -f /opt/ltsp/images/i386.img; then 
-         rm /opt/ltsp/images/i386.img;
+  if ! test -d /opt/ltsp/images/; then 
+         mkdir -p /opt/ltsp/images/ 
   fi
-  chmod a+r /mnt/images/*.img
+
+  BOOT=$(cat /proc/cmdline|cut -d\  -f6|cut -d= -f2)     
+  if test -f /opt/ltsp/images/i386.img; then 
+         rm /opt/ltsp/images/i386.img
+  fi
   ln -s /mnt/${BOOT} /opt/ltsp/images/i386.img
+
   service nbd-server restart
 
 
-  # sync new image
-  nice ltsp-sync-image &
+  # sync image in background
+  nice $0 sync &
 
 #  /etc/init.d/ltsp-localuser boot
 #   /etc/init.d/ltsp-localnbd start
@@ -81,23 +144,27 @@ do_reload() {
 
 
 # main
+main(){
+  if ! cat /proc/cmdline | grep -q "loop"; then exit; fi
 
-if ! cat /proc/cmdline | grep -q "loop"; then exit; fi
-
-case "$1" in
-  start)
+  case "$1" in
+    sync)
+        do_sync
+    start)
         do_start
 	;;
-  stop)
+    stop)
         do_stop
 	;;
-  restart|force-reload|reload)
+    restart|force-reload|reload)
         do_reload
 	;;
-  *)
+    *)
 	#echo "Usage: $SCRIPTNAME {start|stop|restart|reload|force-reload}" >&2
 	echo "Usage: $SCRIPTNAME {start|stop|restart|reload}" >&2
 	exit 3
 	;;
-esac
+  esac
+}
 
+main
