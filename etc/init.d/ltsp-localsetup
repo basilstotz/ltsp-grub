@@ -17,7 +17,6 @@ do_sync()
     exit 1
   fi
 
-
   if test -z "$1"; then
     SERVER="http://172.16.42.10"
     PATH="ltsp-images"
@@ -36,7 +35,6 @@ do_sync()
     echo "0" > version
   fi
 
-
   VERSION_neu="$(wget -O - ${URL}/version 2>/dev/null)"
 
   if test -z "$VERSION_neu"; then 
@@ -44,7 +42,6 @@ do_sync()
      exit 1
   fi
  
-
   if test "$VERSION"  = "$VERSION_neu"; then
     echo "nothing to do"
   else
@@ -67,7 +64,7 @@ do_sync()
       if test -f *.zs-old; then 
         rm *.zs-old 
       fi
-      #change permissions
+      #change permissions for nbd-server
       chmod a+r /mnt/images/*.img
 
       echo "ok"
@@ -135,14 +132,16 @@ do_stop()
 #
 # Function that sends a SIGHUP to the daemon/service
 #
-do_reload() {
+do_reload() 
+{
  do_stop
  do_start
 }
 
 
-# main
-main(){
+
+main()
+{
   if ! cat /proc/cmdline | grep -q "loop"; then exit; fi
 
   case "$1" in
