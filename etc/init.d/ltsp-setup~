@@ -72,16 +72,6 @@ do_sync()
   fi
 }
 
-
-do_daemon()
-{
-  sleep $(( $RANDOM / 10 ))
-  while true; do
-    do_sync
-    sleep 3600
-  done
-}
-
 #
 # Function that starts the daemon/service
 #
@@ -126,12 +116,8 @@ do_start()
   service nbd-server restart
 
 
-  # start sync-daemon in background
-  if ! test -f /var/run/sync-daemon.pid; then
-    $0 daemon &
-    echo $# > /var/run/sync-daemon.pid
-  fi
-
+  # sync image in background
+  nice $0 sync &
 
 }
 
@@ -140,10 +126,6 @@ do_start()
 #
 do_stop()
 {
-   if test -f /var/run/sync-daemon.pid; then
-     kill $(cat /var/run/snc-daemon.pid)
-     rm /var/run/snc-daemon.pid
-   fi
    umount /mnt
 }
 
@@ -163,8 +145,8 @@ main()
   if ! cat /proc/cmdline | grep -q "loop"; then exit; fi
 
   case "$1" in
-    daemon)
-        do_daemon
+    sync)
+        do_sync
         ;;
     start)
         do_start
@@ -177,7 +159,7 @@ main()
 	;;
     *)
 	#echo "Usage: $SCRIPTNAME {start|stop|restart|reload|force-reload}" >&2
-	echo "Usage: $SCRIPTNAME {start|stop|restart|reload}" >&2
+	echo "Usage: $SCRIPTNAME {start|stop|restart|reload|sync}" >&2
 	exit 3
 	;;
   esac
